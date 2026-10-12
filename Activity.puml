@@ -1,0 +1,122 @@
+@startuml
+
+title School Facility Rental - Activity
+
+|Renter|
+start
+
+
+  :Create a request for a facility;
+  :Select date, time, and event type;
+
+  |Website|
+  :Check Availability;
+
+  if (available?) then (yes)
+    :Create request;
+    |Renter|
+    :Enters Contact Information;
+    |Website|
+    :Request Submitted;
+    |School Staff|
+      :Get Staff Approval;
+      if (Approve Request?) then (approved)
+        :Request Approved;
+        |School Staff|
+        :Send Payment to Service to Renter;
+        |Website|
+        :Get Payment;
+              if (Payment Service) then (payment succeeds)
+                 :Saves Booking;
+                 |Renter|
+                 :Confirmation Email of Booking;
+                stop
+
+              else (payment failed)
+                 |Website|
+                 :Record Failed Payment;
+                 :Notify Renter via Email;
+                 |Renter|
+                 :Email Notification of Failed Payment;
+
+              endif
+        stop
+
+      else (rejected)
+        |School Staff|
+        :Request Rejected;
+        |Website|
+        :Record Rejection;
+        :Notify Renter via Email;
+        |Renter|
+        :Email Notification of Rejection;
+      endif
+    stop
+  else (no)
+    |Website|
+    :Show not available;
+    :return to beginning or quit;
+    stop
+  |Website|
+  endif
+'
+'repeat while (Try again?) is (Yes)
+'
+':Cancel request;
+'stop
+'
+'
+'|Renter|
+'start
+':Create a request for a facility;
+'repeat :Select date, time, and event type;
+'backward :Reselect;
+'|Website|
+':Check Availability;
+'  repeat while (Is Faculty Available?) is (not available) not (available)
+':Request Submitted;
+'|School Staff|
+'if (Approve Request?) then (approved)
+'  :Request Approved;
+'else (rejected)
+'  :Request Rejected;
+'endif
+':Page.onRender();
+'
+'
+'if (Page.onSecurityCheck) then (true)
+'  :Page.onInit();
+'  if (isForward?) then (no)
+'    :Process controls;
+'    if (continue processing?) then (no)
+'      stop
+'    endif
+'
+'    if (isPost?) then (yes)
+'      :Page.onPost();
+'    else (no)
+'      :Page.onGet();
+'    endif
+'    :Page.onRender();
+'  endif
+'else (false)
+'endif
+'|School Staff|
+'if (do redirect?) then (yes)
+'  :redirect process;
+'else
+'  if (do forward?) then (yes)
+'    :Forward request;
+'  else (no)
+'    :Render page template;
+'  endif
+'endif
+'|Payment Service|
+'|Email Service|
+':rejected;
+'stop
+':payment failed;
+'stop
+':booking confirmed;
+'stop
+@enduml
